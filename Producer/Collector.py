@@ -25,6 +25,7 @@ class Collector:
         def send_data_periodically():
             while True:
                 self.send_data_to_agent()
+                print("sending...")
                 time.sleep(interval)
         thread = threading.Thread(target=send_data_periodically)
         thread.daemon = True
