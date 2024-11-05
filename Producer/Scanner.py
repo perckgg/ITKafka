@@ -173,7 +173,7 @@ class ScannerLaptop:
         # self.saveData = {**basic_info, "software": software_list}
         self.saveData = {**basic_info, "warnings": warnings}
     def get_basic_info(self):
-        hard_disk = self.get_harddrive_info()
+        # hard_disk = self.get_harddrive_info()
         battery = psutil.sensors_battery()
         cpu_info = self.get_cpu_info()  # Get CPU information
         gpu_info = self.get_gpu_info() # Get GPU information
@@ -186,29 +186,35 @@ class ScannerLaptop:
             "%Y-%m-%d %H:%M:%S"
         )
         system_info = self.get_system_info()
+        total_mem_used = self.get_total_memory_usage()
         return {
-            "computer_name": platform.node(),
-            "OS": f"{platform.system()} {platform.release()} {platform.version()}",
-            "boot_time": boot_time,
+            "basic_info":{
+                "computer_name": platform.node(),
+                "OS": f"{platform.system()} {platform.release()} {platform.version()}",
+                "boot_time": boot_time,
+                 "producer": system_info.get("producer"),
+                "system_model": system_info.get("system_model"),
+                "bios_version": system_info.get("bios_version"),
+                "mother_board": system_info.get("mother_board"),
+                "system_type": system_info.get("system_type"),
+                "serial_number": system_info.get("serial_number"),  
+                "computer_type": system_info.get("computer_type")
+            },
             "cpu": cpu_info,
             "gpu": gpu_info,
             "network": network_info,
             "ram": ram_info,
-            "hard_drive": hard_disk,
+            # "hard_drive": hard_disk,
             "battery": {
                 "percent": str(battery.percent) if battery else "0",
                 "power_plugged": battery.power_plugged if battery else True,
             },
-            
-            "physical_disks": physical_disks,
+            "physical_disks": {
+                "disk_list":physical_disks,
+                "total_memory_used": total_mem_used
+            },
             "software": softwares,
-            "producer": system_info.get("producer"),
-            "system_model": system_info.get("system_model"),
-            "bios_version": system_info.get("bios_version"),
-            "mother_board": system_info.get("mother_board"),
-            "system_type": system_info.get("system_type"),
-            "serial_number": system_info.get("serial_number"),  
-            "computer_type": system_info.get("computer_type"),        
+                  
         }
 
     def get_softwares(self):
@@ -220,7 +226,7 @@ class ScannerLaptop:
         # make software list unique by the name of the software
         software_list = {v["name"]: v for v in software_list}.values()  # unique
         soft_list = list(software_list)
-        # soft_list = soft_list[1:2]
+        soft_list = soft_list[1:10]
         soft_list = list(filter(lambda x: 1&1 and x['publisher']!='undefined', soft_list))
         return soft_list
 
@@ -399,25 +405,34 @@ class ScannerLaptop:
             "inet_card": internet_card[0].get("icname"),
             "inet_card_speed": int(internet_card[0].get("cspeed"))
         }
-    def get_harddrive_info(self):
+    # def get_harddrive_info(self):
         
+    #     partitions = psutil.disk_partitions()
+    #     hard_disk = [
+    #         {
+    #             "label": partition.device.split(":")[0],
+    #             "total": get_size(psutil.disk_usage(partition.mountpoint).total),
+    #             "usage": get_size(psutil.disk_usage(partition.mountpoint).used),
+    #             "free": get_size(psutil.disk_usage(partition.mountpoint).free),
+    #             "percent": psutil.disk_usage(partition.mountpoint).percent,
+    #             "mountpoint": partition.mountpoint,
+    #             "file_system_type": partition.fstype,
+    #         }
+    #         for partition in partitions
+    #     ]
+    #     return hard_disk 
+    def get_total_memory_usage(self):
         partitions = psutil.disk_partitions()
-        hard_disk = [
-            {
-                "label": partition.device.split(":")[0],
-                "total": get_size(psutil.disk_usage(partition.mountpoint).total),
-                "usage": get_size(psutil.disk_usage(partition.mountpoint).used),
-                "free": get_size(psutil.disk_usage(partition.mountpoint).free),
-                "percent": psutil.disk_usage(partition.mountpoint).percent,
-                "mountpoint": partition.mountpoint,
-                "file_system_type": partition.fstype,
-            }
-            for partition in partitions
-        ]
-        return hard_disk     
+        # Tính tổng dung lượng `usage` của tất cả các ổ đĩa
+        total_usage = sum(psutil.disk_usage(partition.mountpoint).used for partition in partitions)
+        # Chuyển đổi tổng dung lượng sang đơn vị dễ đọc hơn, ví dụ như GB
+        total_usage_readable = get_size(total_usage)
+        return total_usage_readable    
+           
     def get_physical_disk_info(self):
         # Lấy thông tin ổ cứng vật lý
         hard_drives = []
+       
         if platform.system() == "Windows":
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
@@ -448,19 +463,21 @@ class ScannerLaptop:
                 if len(parts) >= 9:
                     deviceid, firmware, disk_index, interface_type, media_type, model, partitions_num, serial_number, size, status = parts
 
-                    hard_drives.append({
-                        "deviceid": deviceid[4:],  # Remove the prefix "\\\\.\\PHYSICALDRIVE"
-                        "firmware": firmware,
-                        "index": disk_index,
-                        "interface_type": interface_type,
-                        "media_type": media_type,
-                        "model": model,
-                        "number_of_partitions": int(partitions_num),
-                        "serial_number": serial_number,
-                        "size": get_size(int(size)),  # Convert size to GB
-                        "status": status,
-                        "partitions": partitions_by_disk[disk_index]  # Add partitions
-                    })
+                    hard_drives.append(
+                        {
+                            "deviceid": deviceid[4:],  # Remove the prefix "\\\\.\\PHYSICALDRIVE"
+                            "firmware": firmware,
+                            "index": disk_index,
+                            "interface_type": interface_type,
+                            "media_type": media_type,
+                            "model": model,
+                            "number_of_partitions": int(partitions_num),
+                            "serial_number": serial_number,
+                            "size": get_size(int(size)),  # Convert size to GB
+                            "status": status,
+                            "partitions": partitions_by_disk[disk_index]  # Add partitions
+                        }
+                    )
 
         return hard_drives
     def get_system_info(self):

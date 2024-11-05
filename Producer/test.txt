@@ -1,0 +1,180 @@
+{
+    "basic_info": {
+        "computer_name": "LAPTOP-B7G8F7SO",
+        "OS": "Windows 11 10.0.22631",
+        "boot_time": "2024-11-04 16:58:10",
+        "producer": "Acer",
+        "system_model": "Nitro AN515-58",
+        "bios_version": "V2.13",
+        "mother_board": "Jimny_ADH",
+        "system_type": "x64-based PC",
+        "serial_number": "NBQFK11002211BEC693400",
+        "computer_type": "Mobile"
+    },
+    "cpu": {
+        "name": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+        "description": "12th Gen Intel(R) Core(TM) i7-12700H",
+        "max_speed": 2700,
+        "cores": 14,
+        "logical_processors": 20,
+        "uptime": "0:01:02:17",
+        "processes": 264,
+        "sockets": 1,
+        "ultilization": 11.404999999999998,
+        "machine": "AMD64"
+    },
+    "gpu": [
+        {
+            "name": "NVIDIA GeForce RTX 3050 Ti Laptop GPU",
+            "vendor": "NVIDIA Corporation",
+            "version": "OpenCL 3.0 CUDA",
+            "driver_version": "552.22",
+            "global_memory": 4.0,
+            "max_clock_speed": 1485,
+            "compute_units": 20
+        },
+        {
+            "name": "Intel(R) Iris(R) Xe Graphics",
+            "vendor": "Intel(R) Corporation",
+            "version": "OpenCL 3.0 NEO ",
+            "driver_version": "31.0.101.5081",
+            "global_memory": 6.94,
+            "max_clock_speed": 1400,
+            "compute_units": 96
+        }
+    ],
+    "network": {
+        "ip": "10.229.12.147",
+        "mac": "4C-03-4F-E7-0A-81",
+        "ssid": "HCMUT01",
+        "connection_type": "Wi-Fi",
+        "inet_card": "Killer(R) Wi-Fi 6 AX1650i 160MHz Wireless Network Adapter (201NGW)",
+        "inet_card_speed": 574
+    },
+    "ram": {
+        "total": 15.71,
+        "used": 8.72,
+        "percentage": 55.5,
+        "details": [
+            {
+                "bank_label": "BANK 0",
+                "capacity": 8.0,
+                "speed": "3200",
+                "manufacturer": "SK Hynix",
+                "serial_number": "25DB9B79",
+                "form_factor": "SODIMM",
+                "ram_type": "DDR4"
+            },
+            {
+                "bank_label": "BANK 0",
+                "capacity": 8.0,
+                "speed": "3200",
+                "manufacturer": "Micron Technology",
+                "serial_number": "3EF2A579",
+                "form_factor": "SODIMM",
+                "ram_type": "DDR4"
+            }
+        ]
+    },
+    "battery": {
+        "percent": "100",
+        "power_plugged": true
+    },
+    "physical_disks": {
+        "disk_list": [
+            {
+                "deviceid": "PHYSICALDRIVE0",
+                "firmware": "P7MA000",
+                "index": "0",
+                "interface_type": "SCSI",
+                "media_type": "Fixed hard disk media",
+                "model": "NVMe Micron_3400_MTFDKBA512TFH",
+                "number_of_partitions": 4,
+                "serial_number": "0000_0000_0000_0001_00A0_7521_32F7_72AB.",
+                "size": 476.94,
+                "status": "OK",
+                "partitions": [
+                    {
+                        "index": "Partition #0",
+                        "size": 0.25
+                    },
+                    {
+                        "index": "Partition #1",
+                        "size": 150.39
+                    },
+                    {
+                        "index": "Partition #2",
+                        "size": 325.28
+                    },
+                    {
+                        "index": "Partition #3",
+                        "size": 1.0
+                    }
+                ]
+            }
+        ],
+        "total_memory_used": 331.07
+    },
+    "software": [
+        {
+            "name": "Google Chrome",
+            "version": "130.0.6723.92",
+            "publisher": "Google LLC",
+            "install_date": "2024-11-01",
+            "size": "undefined"
+        },
+        {
+            "name": "K-Lite Mega Codec Pack 15.9.5",
+            "version": "15.9.5",
+            "publisher": "KLCP",
+            "install_date": "2022-07-18",
+            "size": 208.97
+        },
+        {
+            "name": "Microsoft Edge",
+            "version": "130.0.2849.68",
+            "publisher": "Microsoft Corporation",
+            "install_date": "2024-11-03",
+            "size": "undefined"
+        },
+        {
+            "name": "Microsoft Edge WebView2 Runtime",
+            "version": "130.0.2849.56",
+            "publisher": "Microsoft Corporation",
+            "install_date": "2024-10-30",
+            "size": "undefined"
+        },
+        {
+            "name": "Microsoft Help Viewer 2.3",
+            "version": "2.3.28307",
+            "publisher": "Microsoft Corporation",
+            "install_date": "2024-06-03",
+            "size": 12.95
+        },
+        {
+            "name": "OBS Studio",
+            "version": "28.1.2",
+            "publisher": "OBS Project",
+            "install_date": "undefined",
+            "size": "undefined"
+        },
+        {
+            "name": "Skype version 8.119",
+            "version": "8.119",
+            "publisher": "Skype Technologies S.A.",
+            "install_date": "2024-05-31",
+            "size": 282.24
+        },
+        {
+            "name": "TDM-GCC",
+            "version": "1.2105.0",
+            "publisher": "TDM",
+            "install_date": "undefined",
+            "size": "undefined"
+        }
+    ],
+    "warnings": [
+        "CPU utilization is too high",
+        "RAM utilization is too high"
+    ]
+}
