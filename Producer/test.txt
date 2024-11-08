@@ -2,7 +2,7 @@
     "basic_info": {
         "computer_name": "LAPTOP-B7G8F7SO",
         "OS": "Windows 11 10.0.22631",
-        "boot_time": "2024-11-04 16:58:10",
+        "boot_time": "2024-11-04 16:58:08",
         "producer": "Acer",
         "system_model": "Nitro AN515-58",
         "bios_version": "V2.13",
@@ -17,10 +17,10 @@
         "max_speed": 2700,
         "cores": 14,
         "logical_processors": 20,
-        "uptime": "0:01:02:17",
-        "processes": 264,
+        "uptime": "2:03:27:56",
+        "processes": 285,
         "sockets": 1,
-        "ultilization": 11.404999999999998,
+        "ultilization": 5.46,
         "machine": "AMD64"
     },
     "gpu": [
@@ -44,17 +44,17 @@
         }
     ],
     "network": {
-        "ip": "10.229.12.147",
+        "ip": "192.168.1.56",
         "mac": "4C-03-4F-E7-0A-81",
-        "ssid": "HCMUT01",
+        "ssid": "A05.16 5G",
         "connection_type": "Wi-Fi",
         "inet_card": "Killer(R) Wi-Fi 6 AX1650i 160MHz Wireless Network Adapter (201NGW)",
-        "inet_card_speed": 574
+        "inet_card_speed": 780
     },
     "ram": {
         "total": 15.71,
-        "used": 8.72,
-        "percentage": 55.5,
+        "used": 10.28,
+        "percentage": 65.4,
         "details": [
             {
                 "bank_label": "BANK 0",
@@ -113,14 +113,14 @@
                 ]
             }
         ],
-        "total_memory_used": 331.07
+        "total_memory_used": 333.67
     },
     "software": [
         {
             "name": "Google Chrome",
-            "version": "130.0.6723.92",
+            "version": "130.0.6723.93",
             "publisher": "Google LLC",
-            "install_date": "2024-11-01",
+            "install_date": "2024-11-06",
             "size": "undefined"
         },
         {
@@ -175,6 +175,7 @@
     ],
     "warnings": [
         "CPU utilization is too high",
-        "RAM utilization is too high"
+        "RAM utilization is too high",
+        "Uptime is too high"
     ]
 }
