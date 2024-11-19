@@ -7,6 +7,7 @@ import requests
 import threading
 import time
 import datetime
+
 obj = ScannerLaptop()
 
 
@@ -35,6 +36,7 @@ class Collector:
         thread.daemon = True
         thread.start()
         # self.send_data_to_agent()
+
 # def handle_shutdown():
 #     msg = {
 #         'computer':obj.saveData['basic_info'].get('computer_name'),

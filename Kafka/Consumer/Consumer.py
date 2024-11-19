@@ -1,7 +1,7 @@
 from kafka import KafkaConsumer
 
 if __name__ == "__main__":
-    with open('../config.yaml', 'r') as file:
+    with open('./Kafka/config.yaml', 'r') as file:
         topic = file['kafka']['topic']
     consumer = KafkaConsumer(topic, bootstrap_servers='localhost:9092')
 

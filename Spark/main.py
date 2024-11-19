@@ -2,31 +2,30 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, explode
 
 
+# Create a SparkSession
 spark = SparkSession.builder.appName("SystemAnalysis").getOrCreate()
 
-data_path = "./Kafka/Producer/data.json"
-df = spark.read.json(data_path, multiLine=True)
+# Stream from Kafka
+df = spark.readStream.format("kafka")\
+    .option("kafka.bootstrap.servers", "192.168.1.100:9092")\
+    .option("subscribe", "test")\
+    .option("startingOffsets", "earliest")\
+    .load()
 
-flattened_df = df.select(
-    col("basic_info.computer_name").alias("ComputerName"),
-    col("basic_info.OS").alias("OS"),
-    col("cpu.name").alias("CPUName"),
-    col("cpu.cores").alias("CPUCores"),
-    col("cpu.ultilization").alias("CPUUtilization"),
-    explode("gpu").alias("gpu_info"),
-    col("network.ip").alias("IP"),
-    col("network.mac").alias("MAC"),
-    col("ram.total").alias("TotalRAM"),
-    col("ram.used").alias("UsedRAM"),
-    col("ram.percentage").alias("RAMPercentage"),
-    explode("ram.details").alias("RAMDetails"),
-    col("battery.percent").alias("BatteryPercent"),
-    explode("physical_disks.disk_list").alias("DiskList"),
-    col("physical_disks.total_memory_used").alias("TotalDiskMemoryUsed")
-)
+# json_file_path = "./Kafka/Producer/data.json"
+# df = spark.read.json(json_file_path, multiLine=True)
 
-flattened_df.show(vertical=True)
-flattened_df.printSchema()
+# # Select required fields from the DataFrame
+# # boot_time
+# selected_fields_df = df.select(
+#     df.basic_info.computer_name.alias("computer_name"),
+#     df.basic_info.serial_number.alias("serial_number"),
+#     df.basic_info.OS.alias("os"),
+#     df.basic_info.system_model.alias("system_model"),
+#     df.basic_info.system_type.alias("system_type"),
+# )
 
-# Average CPU Utilization
-avg_cpu_util = flattened_df.groupBy("ComputerName").agg({"CPUUtilization": "avg"})
+# selected_fields_df.show(truncate=False)
+
+# # Stop the Spark session
+# spark.stop()
