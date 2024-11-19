@@ -433,7 +433,6 @@ class ScannerLaptop:
             "inet_card_speed": int(internet_card[0].get("cspeed"))
         }
     # def get_harddrive_info(self):
-
     #     partitions = psutil.disk_partitions()
     #     hard_disk = [
     #         {

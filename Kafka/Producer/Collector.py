@@ -7,6 +7,7 @@ import requests
 import threading
 import time
 import datetime
+
 obj = ScannerLaptop()
 
 
@@ -19,9 +20,7 @@ class Collector:
     def send_data_to_agent(self):
         try:
             obj.start()
-            # producer.send(topic=config['kafka']['topic'], value= obj.saveData)
-            with open('data.json', 'w') as file:
-                json.dump(obj.saveData, file, indent=4)
+            producer.send(topic=config['kafka']['topic'], value=obj.saveData)
         except requests.RequestException as e:
             print(f"Error sending data to agent: {e}")
 
@@ -35,6 +34,7 @@ class Collector:
         thread.daemon = True
         thread.start()
         # self.send_data_to_agent()
+
 # def handle_shutdown():
 #     msg = {
 #         'computer':obj.saveData['basic_info'].get('computer_name'),
@@ -70,9 +70,9 @@ if __name__ == "__main__":
         config = yaml.safe_load(file)
     server_ip = config['kafka']['bootstrap_servers']
     collector = Collector(agent_ip=server_ip)
-    # producer = KafkaProducer(value_serializer=lambda v: json.dumps(v).encode('utf-8'),bootstrap_servers=server_ip)
+    producer = KafkaProducer(value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+                             bootstrap_servers=server_ip)
     while collector.status is False:
-        # collector.start_sending()
-        scanning(15)
-        # producer.flush()
-        # time.sleep(5)
+        collector.start_sending()
+        producer.flush()
+        time.sleep(5)
