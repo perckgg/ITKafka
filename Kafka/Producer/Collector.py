@@ -60,7 +60,7 @@ def scanning(interval=10):
         
         time.sleep(interval)
 if __name__ == "__main__":
-    with open("config.yaml","r") as file:
+    with open("../config.yaml","r") as file:
         config = yaml.safe_load(file)
     server_ip = config['kafka']['bootstrap_servers']
     collector = Collector(agent_ip=server_ip)  
