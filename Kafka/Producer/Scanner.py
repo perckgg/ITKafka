@@ -3,19 +3,23 @@ import psutil
 import datetime
 import socket
 import re
+import time
+import subprocess
+from collections import defaultdict
+
 try:
     import pyopencl
 except ImportError:
     pyopencl = None
-import time
-import subprocess
-from collections import defaultdict
+
 if platform.system() == "Windows":
     import winreg
+
 
 def get_size(bytes):
     """Return float representing GBs of bytes input"""
     return round(bytes / 1024**3, 2)
+
 
 def parse_install_date(install_date):
     try:
@@ -27,6 +31,8 @@ def parse_install_date(install_date):
             return "undefined"
     except ValueError:
         return "undefined"
+
+
 def get_computer_type(computer_code):
     """
     Convert SMBIOS Memory Type code to description.
@@ -43,6 +49,8 @@ def get_computer_type(computer_code):
         '8': 'Maximum',
     }
     return computer_types.get(computer_code, 'Unknown')
+
+
 def get_ram_type(smbios_memory_type_code):
     """
     Convert SMBIOS Memory Type code to description.
@@ -52,6 +60,8 @@ def get_ram_type(smbios_memory_type_code):
         '26': 'DDR4',
     }
     return memory_types.get(smbios_memory_type_code, 'Unknown')
+
+
 def get_form_factor_description(form_factor_code):
     form_factors = {
         "0": "Unknown",
@@ -81,6 +91,7 @@ def get_form_factor_description(form_factor_code):
     }
     return form_factors.get(form_factor_code, "Unknown")
 
+
 def foo(hive, flag):
     aReg = winreg.ConnectRegistry(None, hive)
     aKey = winreg.OpenKey(
@@ -102,11 +113,13 @@ def foo(hive, flag):
             software["name"] = winreg.QueryValueEx(asubkey, "DisplayName")[0]
 
             try:
-                software["version"] = winreg.QueryValueEx(asubkey, "DisplayVersion")[0]
+                software["version"] = winreg.QueryValueEx(
+                    asubkey, "DisplayVersion")[0]
             except EnvironmentError:
                 software["version"] = "undefined"
             try:
-                software["publisher"] = winreg.QueryValueEx(asubkey, "Publisher")[0]
+                software["publisher"] = winreg.QueryValueEx(
+                    asubkey, "Publisher")[0]
             except EnvironmentError:
                 software["publisher"] = "undefined"
             try:
@@ -125,6 +138,7 @@ def foo(hive, flag):
 
     return software_list
 
+
 def format_uptime(seconds):
     """Formats uptime in the format days:hours:minutes:seconds"""
     delta = datetime.timedelta(seconds=seconds)
@@ -133,22 +147,26 @@ def format_uptime(seconds):
     minutes, seconds = divmod(remainder, 60)
     return f"{days}:{hours:02}:{minutes:02}:{seconds:02}"
 
+
 def get_uptime():
     boot_time_timestamp = psutil.boot_time()
     uptime_seconds = int(time.time() - boot_time_timestamp)
     formatted_uptime = format_uptime(uptime_seconds)
     return formatted_uptime
+
+
 class ScannerLaptop:
     def __init__(self) -> None:
         self.saveData = {}
         self.threshold = {
             "cpu_utilization": 3,
-            "ram": 50,     
+            "ram": 50,
             "disk":  50,
             "battery": 100,
             "uptime": 1,
         }
-    def check_threshold(self,data):
+
+    def check_threshold(self, data):
         notification = []
         cpu_utilization = data.get("cpu", {}).get("ultilization")
         ram = data.get("ram", {}).get("percentage")
@@ -164,7 +182,6 @@ class ScannerLaptop:
         if days_up >= self.threshold.get("uptime"):
             notification.append("Uptime is too high")
         return notification
-        
 
     def start(self):
         basic_info = self.get_basic_info()
@@ -172,11 +189,12 @@ class ScannerLaptop:
         # software_list = self.get_softwares()
         # self.saveData = {**basic_info, "software": software_list}
         self.saveData = {**basic_info, "warnings": warnings}
+
     def get_basic_info(self):
         # hard_disk = self.get_harddrive_info()
         battery = psutil.sensors_battery()
         cpu_info = self.get_cpu_info()  # Get CPU information
-        gpu_info = self.get_gpu_info() # Get GPU information
+        gpu_info = self.get_gpu_info()  # Get GPU information
         ram_info = self.get_ram_info()  # Get RAM information
         network_info = self.get_network_info()  # Get network information
         boot_time_timestamp = psutil.boot_time()
@@ -188,16 +206,16 @@ class ScannerLaptop:
         system_info = self.get_system_info()
         total_mem_used = self.get_total_memory_usage()
         return {
-            "basic_info":{
+            "basic_info": {
                 "computer_name": platform.node(),
                 "OS": f"{platform.system()} {platform.release()} {platform.version()}",
                 "boot_time": boot_time,
-                 "producer": system_info.get("producer"),
+                "producer": system_info.get("producer"),
                 "system_model": system_info.get("system_model"),
                 "bios_version": system_info.get("bios_version"),
                 "mother_board": system_info.get("mother_board"),
                 "system_type": system_info.get("system_type"),
-                "serial_number": system_info.get("serial_number"),  
+                "serial_number": system_info.get("serial_number"),
                 "computer_type": system_info.get("computer_type")
             },
             "cpu": cpu_info,
@@ -210,11 +228,11 @@ class ScannerLaptop:
                 "power_plugged": battery.power_plugged if battery else True,
             },
             "physical_disks": {
-                "disk_list":physical_disks,
+                "disk_list": physical_disks,
                 "total_memory_used": total_mem_used
             },
             "software": softwares,
-                  
+
         }
 
     def get_softwares(self):
@@ -224,13 +242,14 @@ class ScannerLaptop:
             + foo(winreg.HKEY_CURRENT_USER, 0)
         )
         # make software list unique by the name of the software
-        software_list = {v["name"]: v for v in software_list}.values()  # unique
+        software_list = {
+            v["name"]: v for v in software_list}.values()  # unique
         soft_list = list(software_list)
         soft_list = soft_list[1:10]
-        soft_list = list(filter(lambda x: 1&1 and x['publisher']!='undefined', soft_list))
+        soft_list = list(
+            filter(lambda x: 1 & 1 and x['publisher'] != 'undefined', soft_list))
         return soft_list
 
-    
     def get_gpu_info(self):
         if pyopencl is None:
             return []
@@ -259,18 +278,18 @@ class ScannerLaptop:
             if platform.system() == "Windows":
                 startupinfo = subprocess.STARTUPINFO()
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                result = subprocess.check_output("wmic cpu get SocketDesignation,Name",startupinfo=startupinfo, shell=True).decode()
+                result = subprocess.check_output(
+                    "wmic cpu get SocketDesignation,Name", startupinfo=startupinfo, shell=True).decode()
                 lines = result.split('\n')[1:]
                 for line in lines:
                     parts = re.split(r'\s{2,}', line.strip())
                     if len(parts) == 2:
-                        name,socket = parts
+                        name, socket = parts
                         result = {
                             "socket": 1,
                             "description": name
                         }
                 # Count the number of unique sockets
-                
 
                 return result
         except subprocess.CalledProcessError as e:
@@ -298,64 +317,70 @@ class ScannerLaptop:
             "logical_processors": cpu_count_logical,
             "uptime": str(get_uptime()),
             "processes": len(psutil.pids()),
-            "sockets":socket,
-            "ultilization": cpu_percent, 
+            "sockets": socket,
+            "ultilization": cpu_percent,
             "machine": platform.machine()
         }
         return cpu_info
-           
+
     def get_ram_info(self):
         svmem = psutil.virtual_memory()
         try:
-                if platform.system() == "Windows":
-                    startupinfo = subprocess.STARTUPINFO()
-                    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                    result = subprocess.check_output("wmic memorychip get BankLabel, Capacity, Speed, Manufacturer, SerialNumber, FormFactor,SMBIOSMemoryType", startupinfo=startupinfo,shell=True).decode()
-                    lines = result.strip().split('\n')[1:]  # Skip the header line
-                    ram_info = []
-                    for line in lines:
-                        parts = re.split(r'\s{2,}', line.strip())
-                        if len(parts) >= 7:
-                            bank_label, capacity,form_factor , manufacturer, serial_number,ram_type,speed = parts
-                            ram_info.append({
-                                "bank_label": bank_label,
-                                "capacity": get_size(int(capacity)),
-                                "speed": speed,
-                                "manufacturer": manufacturer,
-                                "serial_number": serial_number,
-                                "form_factor": get_form_factor_description(form_factor),
-                                "ram_type": get_ram_type(ram_type)
-                            })
-                return {
-                    "total": get_size(svmem.total),
-                    "used": get_size(svmem.used),
-                    "percentage": svmem.percent,
-                    "details": ram_info
-                }
+            if platform.system() == "Windows":
+                startupinfo = subprocess.STARTUPINFO()
+                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+                result = subprocess.check_output(
+                    "wmic memorychip get BankLabel, Capacity, Speed, Manufacturer, SerialNumber, FormFactor,SMBIOSMemoryType", startupinfo=startupinfo, shell=True).decode()
+                lines = result.strip().split('\n')[1:]  # Skip the header line
+                ram_info = []
+                for line in lines:
+                    parts = re.split(r'\s{2,}', line.strip())
+                    if len(parts) >= 7:
+                        bank_label, capacity, form_factor, manufacturer, serial_number, ram_type, speed = parts
+                        ram_info.append({
+                            "bank_label": bank_label,
+                            "capacity": get_size(int(capacity)),
+                            "speed": speed,
+                            "manufacturer": manufacturer,
+                            "serial_number": serial_number,
+                            "form_factor": get_form_factor_description(form_factor),
+                            "ram_type": get_ram_type(ram_type)
+                        })
+            return {
+                "total": get_size(svmem.total),
+                "used": get_size(svmem.used),
+                "percentage": svmem.percent,
+                "details": ram_info
+            }
         except subprocess.CalledProcessError as e:
             return f"Error: {str(e)}"
+
     def get_ssid(self):
         try:
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-            result = subprocess.check_output("netsh wlan show interfaces", startupinfo=startupinfo,shell=True).decode()
+            result = subprocess.check_output(
+                "netsh wlan show interfaces", startupinfo=startupinfo, shell=True).decode()
             ssid = None
             lines = result.strip().split('\n')[1:]
-            for line in lines:      
+            for line in lines:
                 if "SSID" in line:
                     ssid = line.split(":")[1].strip()
                     break
             return ssid
         except Exception as e:
             return str(e)
-    def to_mbps(self,status):
+
+    def to_mbps(self, status):
         return round(status / 1000000, 2)
+
     def get_ethernet_info(self):
         try:
             if platform.system() == "Windows":
                 startupinfo = subprocess.STARTUPINFO()
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                result = subprocess.check_output("wmic nic where NetEnabled=true get Name,Speed", startupinfo=startupinfo,shell=True).decode()
+                result = subprocess.check_output(
+                    "wmic nic where NetEnabled=true get Name,Speed", startupinfo=startupinfo, shell=True).decode()
                 interface_info = []
                 lines = result.strip().split('\n')[1:]
                 for line in lines:
@@ -363,10 +388,12 @@ class ScannerLaptop:
                         parts = line.split()
                         speed = parts[-1]
                         name = " ".join(parts[:-1])
-                        interface_info.append({"icname": name, "cspeed": self.to_mbps(int(speed))})
+                        interface_info.append(
+                            {"icname": name, "cspeed": self.to_mbps(int(speed))})
             return interface_info
         except Exception as e:
             return "Cannot get Ethernet information"
+
     def get_network_info(self):
         # Get IP and MAC address
         hostname = socket.gethostname()
@@ -374,8 +401,8 @@ class ScannerLaptop:
         mac_address = None
         connection_type = "unknown"
         internet_card = self.get_ethernet_info()
-          # Get SSID
-        ssid = self.get_ssid()    
+        # Get SSID
+        ssid = self.get_ssid()
         for interface, addrs in psutil.net_if_addrs().items():
             for addr in addrs:
                 if addr.family == psutil.AF_LINK:
@@ -396,7 +423,7 @@ class ScannerLaptop:
                     else:
                         connection_type = "Ethernet"
             if connection_type != "unknown":
-                break # if connection type is identified, break the loop
+                break  # if connection type is identified, break the loop
         return {
             "ip": ip_address,
             "mac": mac_address,
@@ -406,7 +433,7 @@ class ScannerLaptop:
             "inet_card_speed": int(internet_card[0].get("cspeed"))
         }
     # def get_harddrive_info(self):
-        
+
     #     partitions = psutil.disk_partitions()
     #     hard_disk = [
     #         {
@@ -420,28 +447,31 @@ class ScannerLaptop:
     #         }
     #         for partition in partitions
     #     ]
-    #     return hard_disk 
+    #     return hard_disk
     def get_total_memory_usage(self):
         partitions = psutil.disk_partitions()
         # Tính tổng dung lượng `usage` của tất cả các ổ đĩa
-        total_usage = sum(psutil.disk_usage(partition.mountpoint).used for partition in partitions)
+        total_usage = sum(psutil.disk_usage(
+            partition.mountpoint).used for partition in partitions)
         # Chuyển đổi tổng dung lượng sang đơn vị dễ đọc hơn, ví dụ như GB
         total_usage_readable = get_size(total_usage)
-        return total_usage_readable    
-           
+        return total_usage_readable
+
     def get_physical_disk_info(self):
         # Lấy thông tin ổ cứng vật lý
         hard_drives = []
-       
+
         if platform.system() == "Windows":
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
             disk_command = "wmic diskdrive get model,size,deviceid,index,InterfaceType,Status,FirmwareRevision,mediaType,serialNumber,partitions"
-            disk_result = subprocess.check_output(disk_command,startupinfo=startupinfo, shell=True).decode().strip()
+            disk_result = subprocess.check_output(
+                disk_command, startupinfo=startupinfo, shell=True).decode().strip()
 
             # Lấy thông tin phân vùng
             partition_command = "wmic partition get deviceid,diskindex,size"
-            partition_result = subprocess.check_output(partition_command, startupinfo=startupinfo,shell=True).decode().strip()
+            partition_result = subprocess.check_output(
+                partition_command, startupinfo=startupinfo, shell=True).decode().strip()
 
             # Parse the output of the disk command
             disk_lines = disk_result.split('\n')[1:]
@@ -455,7 +485,8 @@ class ScannerLaptop:
                     partition_deviceid, partition_diskindex, partition_size = parts
                     partitions_by_disk[partition_diskindex].append({
                         "index": f"Partition #{len(partitions_by_disk[partition_diskindex])}",
-                        "size": get_size(int(partition_size))  # Convert size to GB
+                        # Convert size to GB
+                        "size": get_size(int(partition_size))
                     })
             # Process each disk and add corresponding partitions
             for disk in disk_lines:
@@ -465,7 +496,8 @@ class ScannerLaptop:
 
                     hard_drives.append(
                         {
-                            "deviceid": deviceid[4:],  # Remove the prefix "\\\\.\\PHYSICALDRIVE"
+                            # Remove the prefix "\\\\.\\PHYSICALDRIVE"
+                            "deviceid": deviceid[4:],
                             "firmware": firmware,
                             "index": disk_index,
                             "interface_type": interface_type,
@@ -475,11 +507,13 @@ class ScannerLaptop:
                             "serial_number": serial_number,
                             "size": get_size(int(size)),  # Convert size to GB
                             "status": status,
-                            "partitions": partitions_by_disk[disk_index]  # Add partitions
+                            # Add partitions
+                            "partitions": partitions_by_disk[disk_index]
                         }
                     )
 
         return hard_drives
+
     def get_system_info(self):
         result = {}
         if platform.system() == "Windows":
@@ -488,14 +522,16 @@ class ScannerLaptop:
                 command2 = "wmic baseboard get product, serialnumber,version"
                 startupinfo = subprocess.STARTUPINFO()
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                output1 = subprocess.check_output(command1, startupinfo=startupinfo,shell=True).decode().strip()
-                output2 = subprocess.check_output(command2, startupinfo=startupinfo,shell=True).decode().strip()
+                output1 = subprocess.check_output(
+                    command1, startupinfo=startupinfo, shell=True).decode().strip()
+                output2 = subprocess.check_output(
+                    command2, startupinfo=startupinfo, shell=True).decode().strip()
                 lines1 = output1.split('\n')[1:]
                 lines2 = output2.split('\n')[1:]
                 for line in lines1:
                     parts = re.split(r'\s{2,}', line.strip())
                     if len(parts) == 4:
-                        model, manufacturer, computer_type,system_type = parts
+                        model, manufacturer, computer_type, system_type = parts
                         result = {
                             "producer": model,
                             "system_model": manufacturer,
