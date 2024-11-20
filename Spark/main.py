@@ -1,9 +1,22 @@
+import os
+import warnings
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, explode, expr, lit, sum, unix_timestamp
 
+###################################################################################################
+# Download winutils https://github.com/cdarlint/winutils/raw/master/hadoop-3.3.5/bin/winutils.exe #
+# Copy exe into C:\hadoop\bin                                                                     #
+####################################################################################################
+warnings.simplefilter(action='ignore', category=FutureWarning)
+os.environ['HADOOP_HOME'] = "C:\\hadoop"
+connection_string = "mongodb+srv://minh150555:BjYWmSxUg9Ier4pk@devconnector.xamuv.mongodb.net/"
 
 # Create a SparkSession
-spark = SparkSession.builder.appName("SystemAnalysis").getOrCreate()
+spark = SparkSession.builder.appName("SystemAnalysis") \
+    .config("spark.mongodb.read.connection.uri", connection_string) \
+    .config("spark.mongodb.write.connection.uri", connection_string) \
+    .config('spark.jars.packages', 'org.mongodb.spark:mongo-spark-connector_2.12:10.4.0') \
+    .getOrCreate()
 
 # # Stream from Kafka
 # df = spark.readStream.format("kafka")\
@@ -55,12 +68,14 @@ selected_fields_df = selected_fields_df.withColumn(
 
 selected_fields_df.show(truncate=False, vertical=True)
 
-# # Average CPU Utilization
-# avg_cpu_util = selected_fields_df.groupBy("ComputerName").agg({"CPUUtilization": "avg"})
-# # RAM Usage Summary
-# ram_usage = selected_fields_df.groupBy("ComputerName").agg({"TotalRAM": "max", "UsedRAM": "max", "RAMPercentage": "max"})
-# # Disk Usage and Partition Analysis
-# disk_usage = selected_fields_df.select("ComputerName", "DiskList.size", "TotalDiskMemoryUsed").groupBy("ComputerName").sum("size")
+# Write DataFrame to MongoDB
+# selected_fields_df.write \
+#     .format("mongodb") \
+#     .mode("append") \
+#     .option("database", "big_data") \
+#     .option("collection", "spark") \
+#     .save()
+
 
 # Stop the Spark session
 spark.stop()
