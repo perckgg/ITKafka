@@ -432,8 +432,8 @@ class ScannerLaptop:
             "inet_card": internet_card[0].get("icname"),
             "inet_card_speed": int(internet_card[0].get("cspeed"))
         }
-    # def get_harddrive_info(self):
 
+    # def get_harddrive_info(self):
     #     partitions = psutil.disk_partitions()
     #     hard_disk = [
     #         {
@@ -448,6 +448,7 @@ class ScannerLaptop:
     #         for partition in partitions
     #     ]
     #     return hard_disk
+
     def get_total_memory_usage(self):
         partitions = psutil.disk_partitions()
         # Tính tổng dung lượng `usage` của tất cả các ổ đĩa
