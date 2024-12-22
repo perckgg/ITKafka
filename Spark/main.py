@@ -69,12 +69,12 @@ selected_fields_df = selected_fields_df.withColumn(
 selected_fields_df.show(truncate=False, vertical=True)
 
 # Write DataFrame to MongoDB
-# selected_fields_df.write \
-#     .format("mongodb") \
-#     .mode("append") \
-#     .option("database", "big_data") \
-#     .option("collection", "spark") \
-#     .save()
+selected_fields_df.write \
+    .format("mongodb") \
+    .mode("append") \
+    .option("database", "big_data") \
+    .option("collection", "spark") \
+    .save()
 
 
 # Stop the Spark session
